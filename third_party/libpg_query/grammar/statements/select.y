@@ -1157,6 +1157,10 @@ table_ref:	relation_expr opt_alias_clause opt_at_clause opt_tablesample_clause
 					$2->alias = $4;
 					$$ = (PGNode *) $2;
 				}
+            | GRAPH_TABLE GraphTableStmt
+                {
+                        $$ = (PGNode *) $2;
+				}
             | alias_prefix_colon_clause '(' joined_table ')'
                 {
                     $3->alias = $1;
@@ -4342,16 +4346,22 @@ Iconst:		ICONST									{ $$ = $1; };
 type_function_name:	IDENT							{ $$ = $1; }
 			| unreserved_keyword					{ $$ = pstrdup($1); }
 			| type_func_name_keyword				{ $$ = pstrdup($1); }
+            | pgq_unreserved_keyword                { $$ = pstrdup($1); }
+
 		;
 
 function_name_token:	IDENT						{ $$ = $1; }
 			| unreserved_keyword					{ $$ = pstrdup($1); }
 			| func_name_keyword						{ $$ = pstrdup($1); }
+            | pgq_unreserved_keyword                { $$ = pstrdup($1); }
+
 		;
 
 type_name_token:	IDENT						{ $$ = $1; }
 			| unreserved_keyword					{ $$ = pstrdup($1); }
 			| type_name_keyword						{ $$ = pstrdup($1); }
+            | pgq_unreserved_keyword                { $$ = pstrdup($1); }
+
 		;
 
 any_name:	ColId						{ $$ = list_make1(makeString($1)); }
