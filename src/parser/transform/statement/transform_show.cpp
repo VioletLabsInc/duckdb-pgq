@@ -28,11 +28,14 @@ unique_ptr<QueryNode> Transformer::TransformShow(duckdb_libpgquery::PGVariableSh
 				showref->catalog_name = qualified_name.schema;
 				showref->schema_name = qualified_name.name;
 			}
+		} else if (stmt.set == std::string("property_graph")) {
+			showref->table_name = stmt.relation->relname;
 		} else {
 			// describing a set (e.g. SHOW ALL TABLES) - push it in the table name
 			showref->table_name = stmt.set;
 			showref->show_type = ShowType::SHOW_UNQUALIFIED;
 		}
+
 	} else if (!stmt.relation->schemaname) {
 		// describing an unqualified relation - check if this is a "special" relation
 		string table_name = StringUtil::Lower(stmt.relation->relname);

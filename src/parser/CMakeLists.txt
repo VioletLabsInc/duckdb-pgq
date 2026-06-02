@@ -21,10 +21,16 @@ add_library_unity(
   parsed_expression.cpp
   parsed_expression_iterator.cpp
   parser.cpp
+  path_element.cpp
+  path_pattern.cpp
+  path_reference.cpp
+  pgq_enum_util.cpp
+  property_graph_table.cpp
   qualified_name.cpp
   query_error_context.cpp
   query_node.cpp
   result_modifier.cpp
+  subpath_element.cpp
   tableref.cpp
   transformer.cpp)
 set(ALL_OBJECT_FILES

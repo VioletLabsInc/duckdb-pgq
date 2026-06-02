@@ -18,6 +18,12 @@
 #include "duckdb/parser/parsed_data/create_secret_info.hpp"
 #include "duckdb/parser/qualified_name.hpp"
 #include "duckdb/parser/query_node.hpp"
+#include "duckdb/parser/property_graph_table.hpp"
+#include "duckdb/parser/path_pattern.hpp"
+#include "duckdb/parser/path_element.hpp"
+#include "duckdb/parser/subpath_element.hpp"
+#include "pg_definitions.hpp"
+#include "duckdb/parser/query_node/cte_node.hpp"
 #include "duckdb/parser/tokens.hpp"
 #include "nodes/parsenodes.hpp"
 #include "nodes/primnodes.hpp"
@@ -327,6 +333,29 @@ private:
 	unique_ptr<TableRef> TransformRangeSubselect(duckdb_libpgquery::PGRangeSubselect &root);
 	//! Transform a VALUES list into a set of expressions
 	unique_ptr<TableRef> TransformValuesList(duckdb_libpgquery::PGList *list);
+
+	//! Transform a match clause (SQL/PGQ)
+	unique_ptr<TableRef> TransformMatch(duckdb_libpgquery::PGMatchClause &root);
+	//! Transform a SQL/PGQ duckdb_libpgquery::T_PGCreatePropertyGraphStmt node into a CreatePropertyGraphStatement
+	unique_ptr<CreateStatement> TransformCreatePropertyGraph(duckdb_libpgquery::PGCreatePropertyGraphStmt &node);
+
+	//===--------------------------------------------------------------------===//
+	// SQL/PGQ Property graph transform
+	//===--------------------------------------------------------------------===//
+	//! Transform a node/edge table create (SQL/PGQ)
+	shared_ptr<PropertyGraphTable> TransformPropertyGraphTable(duckdb_libpgquery::PGPropertyGraphTable *node,
+	                                                           case_insensitive_set_t &global_label_set,
+	                                                           case_insensitive_map_t<string> &table_alias_map);
+	//! Transform a path pattern (SQL/PGQ)
+	unique_ptr<PathPattern> TransformPath(duckdb_libpgquery::PGPathPattern *root);
+	//! Transform a path element (SQL/PGQ)
+	static unique_ptr<PathElement> TransformPathElement(duckdb_libpgquery::PGPathElement *element);
+	//! Transform a subpath (SQL/PGQ)
+	unique_ptr<SubPath> TransformSubPathElement(duckdb_libpgquery::PGSubPath *element,
+	                                            unique_ptr<PathPattern> &path_pattern);
+
+	//! Transform a Postgres duckdb_libpgquery::T_PGDropPropertyGraphStmt node into a Drop[Table,Schema]Statement
+	unique_ptr<SQLStatement> TransformDropPropertyGraph(duckdb_libpgquery::PGDropPropertyGraphStmt &node);
 
 	//! Transform using clause
 	vector<string> TransformUsingClause(duckdb_libpgquery::PGList &usingClause);
