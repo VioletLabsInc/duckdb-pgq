@@ -19,6 +19,13 @@ bool TableFunctionRef::Equals(const TableRef &other_p) const {
 		return false;
 	}
 	auto &other = other_p.Cast<TableFunctionRef>();
+	if (!other.match_expression && !match_expression) {
+		// both empty
+	} else if (!other.match_expression || !match_expression) {
+		return false;
+	} else if (!match_expression->Equals(*other.match_expression)) {
+		return false;
+	}
 	return function->Equals(*other.function);
 }
 
@@ -26,6 +33,9 @@ unique_ptr<TableRef> TableFunctionRef::Copy() {
 	auto copy = make_uniq<TableFunctionRef>();
 
 	copy->function = function->Copy();
+	if (match_expression) {
+		copy->match_expression = unique_ptr_cast<ParsedExpression, MatchExpression>(match_expression->Copy());
+	}
 	copy->column_name_alias = column_name_alias;
 	copy->with_ordinality = with_ordinality;
 	CopyProperties(*copy);

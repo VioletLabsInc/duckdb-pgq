@@ -10,6 +10,7 @@
 
 #include "duckdb/parser/parsed_expression.hpp"
 #include "duckdb/parser/tableref.hpp"
+#include "duckdb/parser/tableref/matchref.hpp"
 #include "duckdb/parser/statement/select_statement.hpp"
 #include "duckdb/common/enums/ordinality_request_type.hpp"
 
@@ -23,6 +24,10 @@ public:
 	DUCKDB_API TableFunctionRef();
 
 	unique_ptr<ParsedExpression> function;
+
+	//! Native GRAPH_TABLE syntax stores the match pattern here so duckpgq_match can bind without
+	//! evaluating the match as a scalar function argument.
+	unique_ptr<MatchExpression> match_expression;
 
 	// if the function takes a subquery as argument its in here
 	unique_ptr<SelectStatement> subquery;
