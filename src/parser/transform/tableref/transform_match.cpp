@@ -152,9 +152,10 @@ unique_ptr<TableRef> Transformer::TransformMatch(duckdb_libpgquery::PGMatchClaus
 
 	TransformExpressionList(*root.columns, match_info->column_list);
 
+	auto children = vector<unique_ptr<ParsedExpression>>();
+	children.push_back(std::move(match_info));
 	auto result = make_uniq<TableFunctionRef>();
-	result->match_expression = std::move(match_info);
-	result->function = make_uniq<FunctionExpression>("duckpgq_match", vector<unique_ptr<ParsedExpression>>());
+	result->function = make_uniq<FunctionExpression>("duckpgq_match", std::move(children));
 
 	return std::move(result);
 }
